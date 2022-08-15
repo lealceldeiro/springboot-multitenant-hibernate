@@ -1,0 +1,16 @@
+spring:
+  datasource:
+    password: password
+    username: sa
+    url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false
+    driver-class-name: org.h2.Driver
+  jpa:
+    generate-ddl: false
+    open-in-view: false
+    show-sql: true
+    database-platform: org.hibernate.dialect.H2Dialect
+    hibernate:
+      ddl-auto: 'create-drop'
+  h2:
+    console:
+      enabled: true
