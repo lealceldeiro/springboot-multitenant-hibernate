@@ -1,10 +1,12 @@
 GET localhost:8080/person
+X-TenantID: user1
 
 ###
 
 POST localhost:8080/person
 Content-Type: application/json
+X-TenantID: user2
 
 {
-  "name": "John"
+  "name": "John2"
 }

@@ -5,7 +5,7 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public class PersonDto {
+public final class PersonDto {
     private Long id;
     private String name;
     private String tenant;

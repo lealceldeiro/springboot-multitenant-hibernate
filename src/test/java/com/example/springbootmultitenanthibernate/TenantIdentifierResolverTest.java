@@ -27,9 +27,9 @@ class TenantIdentifierResolverTest {
 
     @BeforeEach
     void setUp() {
-        tenantIdentifierResolver.setTenant(PIVOTAL);
+        TenantContext.setTenantInfo(PIVOTAL);
         personRepository.deleteAll();
-        tenantIdentifierResolver.setTenant(VMWARE);
+        TenantContext.setTenantInfo(VMWARE);
         personRepository.deleteAll();
     }
 
@@ -41,15 +41,15 @@ class TenantIdentifierResolverTest {
         assertThat(adam.getTenant()).isEqualTo(PIVOTAL);
         assertThat(eve.getTenant()).isEqualTo(VMWARE);
 
-        tenantIdentifierResolver.setTenant(VMWARE);
+        TenantContext.setTenantInfo(VMWARE);
         assertThat(personRepository.findAll()).extracting(Person::getName).containsExactly("Eve");
 
-        tenantIdentifierResolver.setTenant(PIVOTAL);
+        TenantContext.setTenantInfo(PIVOTAL);
         assertThat(personRepository.findAll()).extracting(Person::getName).containsExactly("Adam");
     }
 
     private Person createPerson(String schema, String name) {
-        tenantIdentifierResolver.setTenant(schema);
+        TenantContext.setTenantInfo(schema);
 
         Person adam = txTemplate.execute(tx -> {
             Person person = new Person(name);
@@ -65,7 +65,7 @@ class TenantIdentifierResolverTest {
         Person adam = createPerson(PIVOTAL, "Adam");
         Person vAdam = createPerson(VMWARE, "Adam");
 
-        tenantIdentifierResolver.setTenant(VMWARE);
+        TenantContext.setTenantInfo(VMWARE);
         assertThat(personRepository.findById(vAdam.getId()).get().getTenant()).isEqualTo(VMWARE);
         assertThat(personRepository.findById(adam.getId())).isEmpty();
     }
@@ -76,10 +76,10 @@ class TenantIdentifierResolverTest {
         createPerson(VMWARE, "Adam");
         createPerson(VMWARE, "Eve");
 
-        tenantIdentifierResolver.setTenant(VMWARE);
+        TenantContext.setTenantInfo(VMWARE);
         assertThat(personRepository.findJpqlByName("Adam").getTenant()).isEqualTo(VMWARE);
 
-        tenantIdentifierResolver.setTenant(PIVOTAL);
+        TenantContext.setTenantInfo(PIVOTAL);
         assertThat(personRepository.findJpqlByName("Eve")).isNull();
     }
 
@@ -88,7 +88,7 @@ class TenantIdentifierResolverTest {
         createPerson(PIVOTAL, "Adam");
         createPerson(VMWARE, "Adam");
 
-        tenantIdentifierResolver.setTenant(VMWARE);
+        TenantContext.setTenantInfo(VMWARE);
         assertThatThrownBy(() -> personRepository.findSqlByName("Adam"))
                 .isInstanceOf(IncorrectResultSizeDataAccessException.class);
     }

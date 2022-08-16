@@ -6,18 +6,15 @@ import org.springframework.boot.autoconfigure.orm.jpa.HibernatePropertiesCustomi
 import org.springframework.stereotype.Component;
 
 import java.util.Map;
+import java.util.Optional;
 
 @Component
 public class TenantIdentifierResolver implements CurrentTenantIdentifierResolver, HibernatePropertiesCustomizer {
-    private String tenant = "unknown";
-
-    public void setTenant(String tenant) {
-        this.tenant = tenant;
-    }
+    private static final String UNKNOWN = "unknown";
 
     @Override
     public String resolveCurrentTenantIdentifier() {
-        return tenant;
+        return Optional.ofNullable(TenantContext.getTenantInfo()).orElse(UNKNOWN);
     }
 
     @Override
@@ -26,7 +23,7 @@ public class TenantIdentifierResolver implements CurrentTenantIdentifierResolver
     }
 
     @Override
-    public void customize(final Map<String, Object> hibernateProperties) {
+    public void customize(Map<String, Object> hibernateProperties) {
         hibernateProperties.put(AvailableSettings.MULTI_TENANT_IDENTIFIER_RESOLVER, this);
     }
 }
