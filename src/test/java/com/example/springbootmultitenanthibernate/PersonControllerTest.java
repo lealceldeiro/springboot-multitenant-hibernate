@@ -108,9 +108,9 @@ class PersonControllerTest {
         AssertionErrors.assertFalse("Exception from withing thread", failed.get());
     }
 
-    private static void awaitOnLatch(CountDownLatch startLatch) {
+    private static void awaitOnLatch(CountDownLatch latch) {
         try {
-            startLatch.await();
+            latch.await();
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }

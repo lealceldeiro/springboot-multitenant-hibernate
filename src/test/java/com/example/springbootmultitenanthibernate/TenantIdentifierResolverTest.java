@@ -1,5 +1,6 @@
 package com.example.springbootmultitenanthibernate;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,13 +52,12 @@ class TenantIdentifierResolverTest {
     private Person createPerson(String schema, String name) {
         TenantContext.setTenantInfo(schema);
 
-        Person adam = txTemplate.execute(tx -> {
-            Person person = new Person(name);
-            return personRepository.save(person);
-        });
+        Person person = txTemplate.execute(tx -> personRepository.save(new Person(name)));
 
-        assertThat(adam.getId()).isNotNull();
-        return adam;
+        assertThat(person).isNotNull();
+        assertThat(person.getId()).isNotNull();
+
+        return person;
     }
 
     @Test
@@ -66,7 +66,10 @@ class TenantIdentifierResolverTest {
         Person vAdam = createPerson(VMWARE, "Adam");
 
         TenantContext.setTenantInfo(VMWARE);
-        assertThat(personRepository.findById(vAdam.getId()).get().getTenant()).isEqualTo(VMWARE);
+        var person = personRepository.findById(vAdam.getId());
+
+        Assertions.assertTrue(person.isPresent());
+        assertThat(person.get().getTenant()).isEqualTo(VMWARE);
         assertThat(personRepository.findById(adam.getId())).isEmpty();
     }
 
